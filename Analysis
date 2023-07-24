@@ -1,0 +1,106 @@
+import tkinter as tk
+from tkinter import messagebox
+import turtle
+import random
+
+def analyze_numbers():
+    try:
+        num_5_min = float(entry_minute_5.get())
+        num_10_min = float(entry_minute_10.get())
+
+        if num_5_min > num_10_min + 2:
+            result = "Don't buy! Minute 5 number is far higher than the minute 10 number."
+            trend_color = "red"
+        elif num_5_min > num_10_min and num_10_min >= 0:
+            result = "Buy! Minute 5 number is just a little higher than the minute 10 number."
+            trend_color = "green"
+        elif num_10_min > num_5_min + 2:
+            result = "Buy! Minute 10 number is a lot higher than the minute 5 number."
+            trend_color = "green"
+        elif num_5_min > 0 and num_10_min > 0:
+            result = "Buy! Both numbers are positive."
+            trend_color = "green"
+        elif num_5_min < 0 and num_10_min < 0:
+            result = "Don't buy! Both numbers are negative."
+            trend_color = "red"
+        else:
+            result = "Undecided. Please reconsider the numbers."
+            trend_color = "black"
+
+        messagebox.showinfo("Result", result)
+
+        # Call the animation functions after showing the result
+        if "Buy" in result:
+            animate_stock_chart(trend_color, True)
+        elif "Don't buy" in result:
+            animate_stock_chart(trend_color, False)
+
+    except ValueError:
+        messagebox.showerror("Error", "Invalid input. Please enter numeric values.")
+
+def animate_stock_chart(color, buy):
+    turtle.clear()
+    turtle.hideturtle()
+    turtle_screen.tracer(0)
+    turtle.speed(1)
+    turtle.penup()
+
+    # Move the turtle to the starting position
+    x = -140
+    y = random.randint(-40, 40)  # Adjusted range for less drastic fluctuations
+    turtle.goto(x, y)
+    turtle.pendown()
+
+    # Set color for stock trend line
+    turtle.color(color)
+
+    # Adjust random fluctuations based on "Buy" or "Don't Buy"
+    if buy:
+        fluctuations = range(1, 4)  # Less drastic positive fluctuations for "Buy"
+    else:
+        fluctuations = range(-3, 0)  # Less drastic negative fluctuations for "Don't Buy"
+
+    # Draw the stock chart line
+    for _ in range(56):
+        y += random.choice(fluctuations)
+        x += 5
+        turtle.goto(x, y)
+
+    # Leave the stock trend line visible on the screen
+    turtle_screen.update()
+
+    # Show the final result message
+    turtle.penup()
+    turtle.goto(0, 100)
+    turtle.color(color)
+    turtle.write("BUY" if buy else "DON'T BUY", font=("Arial", 30, "bold"), align="center")
+
+# Create the GUI window
+root = tk.Tk()
+root.title("Stock Analyzer")
+
+# Create labels and entry fields for minute 5 and minute 10 numbers
+label_minute_5 = tk.Label(root, text="Minute 5 Number:")
+label_minute_5.pack()
+entry_minute_5 = tk.Entry(root)
+entry_minute_5.pack()
+
+label_minute_10 = tk.Label(root, text="Minute 10 Number:")
+label_minute_10.pack()
+entry_minute_10 = tk.Entry(root)
+entry_minute_10.pack()
+
+# Create the "Analyze" button
+btn_analyze = tk.Button(root, text="Analyze", command=analyze_numbers)
+btn_analyze.pack()
+
+# Initialize the turtle screen
+turtle_screen = turtle.Screen()
+turtle_screen.title("Stock Trend Animation")
+turtle_screen.bgcolor("white")
+turtle_screen.setup(width=300, height=200)
+turtle_screen.tracer(0)  # Set the tracer to 0 to improve the animation
+
+# Start the main loop
+root.mainloop()
+
